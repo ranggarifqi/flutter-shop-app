@@ -7,7 +7,6 @@ import '../providers/product.dart';
 import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
@@ -36,7 +35,9 @@ class ProductItem extends StatelessWidget {
             onPressed: () {
               product.setFavorite();
             },
-            color: product.isFavorite ? Theme.of(context).accentColor : Colors.white,
+            color: product.isFavorite
+                ? Theme.of(context).accentColor
+                : Colors.white,
           ),
           title: Text(
             product.title,
@@ -46,6 +47,19 @@ class ProductItem extends StatelessWidget {
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
               cart.addItem(product.id, product.price, product.title);
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text(
+                  'Added item to cart!',
+                ),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                  label: 'UNDO',
+                  onPressed: () {
+                    cart.removeSingleItem(product.id);
+                  },
+                ),
+              ));
             },
             color: Theme.of(context).accentColor,
           ),
