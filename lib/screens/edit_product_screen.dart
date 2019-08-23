@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/product.dart';
+import 'package:flutter_complete_guide/providers/products.dart';
+import 'package:provider/provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static String routeName = '/edit-product-screen';
@@ -24,6 +26,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageURL() {
     if (!_imageUrlFocusNode.hasFocus) {
+      if (_imageUrlController.text.isEmpty) {
+        return;
+      }
+      if (!_imageUrlController.text.startsWith('http') || !_imageUrlController.text.startsWith('https')) {
+        return;
+      }
+      if (!_imageUrlController.text.endsWith('.png') && !_imageUrlController.text.endsWith('.jpg') && !_imageUrlController.text.endsWith('.jpeg')) {
+        return;
+      }
       setState(() {});
     }
   }
@@ -34,16 +45,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
 
     _form.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
+    Provider.of<Products>(context).addProduct(_editedProduct);
+    Navigator.pop(context);
   }
 
   @override
   void initState() {
     super.initState();
-
     _imageUrlFocusNode.addListener(_updateImageURL);
   }
 
@@ -120,6 +128,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       id: null,
                     );
                   },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter a price';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    if (double.parse(value) <= 0) {
+                      return 'Please enter number greater than 0';
+                    }
+                    return null;
+                  }
                 ),
                 TextFormField(
                   decoration: InputDecoration(
@@ -137,6 +157,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       id: null,
                     );
                   },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please provide a description';
+                    }
+                    if (value.length < 10) {
+                      return 'Should be at least 10 character long';
+                    }
+                    return null;
+                  }
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -174,6 +203,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             id: null,
                           );
                         },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter an image URL';
+                          }
+                          if (!value.startsWith('http') || !value.startsWith('https')) {
+                            return 'Please enter a valid URL';
+                          }
+                          if (!value.endsWith('.png') && !value.endsWith('.jpg') && !value.endsWith('.jpeg')) {
+                            return 'Please enter a valid image url';
+                          }
+                          return null;
+                        }
                       ),
                     ),
                   ],
