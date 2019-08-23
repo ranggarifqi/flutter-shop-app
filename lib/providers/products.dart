@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
-
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -68,5 +67,18 @@ class Products with ChangeNotifier {
       orElse: () => null,
     );
     return product;
+  }
+
+  void updateProductByID(String id, Product editedProduct) {
+    final idx = _items.indexWhere((val){
+      return val.id == id;
+    });
+
+    if (idx >= 0) {
+      _items[idx] = editedProduct;
+      notifyListeners();
+    } else {
+      print('Product with specified id doesn\'t exist!');
+    }
   }
 }
